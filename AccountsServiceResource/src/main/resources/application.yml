@@ -2,6 +2,7 @@ spring:
   application.name: AccountsService
   profiles.active: dev
 
+spring.security.oauth2.resourceserver.jwt.issuer-uri: http://account-auth-server:9000
 ---
 spring:
   sql.init.mode: always
