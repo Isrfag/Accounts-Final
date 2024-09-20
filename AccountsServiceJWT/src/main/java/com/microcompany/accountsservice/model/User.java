@@ -38,6 +38,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private ERole role;
 
+    public User(String username, String password) {
+        this.email= username;
+        this.password = password;
+    }
+
     //JWT Security related fields
 
     @Override

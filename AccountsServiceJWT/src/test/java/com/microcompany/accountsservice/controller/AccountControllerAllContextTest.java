@@ -2,13 +2,17 @@ package com.microcompany.accountsservice.controller;
 
 import com.microcompany.accountsservice.exception.CustomerNotFoundException;
 import com.microcompany.accountsservice.model.Account;
-import com.microcompany.accountsservice.model.Customer;
+import com.microcompany.accountsservice.model.ERole;
+import com.microcompany.accountsservice.model.User;
+import com.microcompany.accountsservice.persistence.UserRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -21,10 +25,67 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @ActiveProfiles("dev")
 @Sql(value = "classpath:data_testing.sql")
-public class AccountControllerAllContextTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class AccountControllerAllContextTest extends AbstractJWTTestCollab {
 
     @Autowired
     private AccountController accountController;
+
+    private String emailD = "t@t.com";
+    private String emailC ="cajero@aa.es";
+    private String password = "tpasswrd";
+    private String accessToken = null;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @BeforeAll
+    public void SetUpUsers() {
+        // Create user
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        String enc_password = passwordEncoder.encode(password);
+
+        User director = new User(null, emailD, enc_password, ERole.DIRECTOR);
+        userRepository.save(director);
+
+        String enc_password2 = passwordEncoder.encode(password);
+
+        User cajero = new User(null, emailC, enc_password2, ERole.CAJERO);
+        userRepository.save(cajero);
+
+
+    }
+
+
+    @Test
+    public void givenADirector_WhenUserEmailandPasswordAreValid_ThenReturnToken() throws Exception {
+        String token = this.obtainAccessToken("t@t.com","tpasswrd");
+        assertThat(token)
+                .isNotNull().isNotEmpty();
+
+    }
+
+    @Test
+    public void givenACajero_WhenCajeroIsLogged_ThenHasAccessToAccountController() throws Exception {
+        assertThat(
+                this.obtainAccessToken("cajero@aa.es","tpasswrd"))
+                .isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void givenADirector_WhenDirectorIsLogged_ThenTokenIsOnHeaders() throws Exception{
+        String token = this.obtainAccessToken("t@t.com","tpasswrd");
+        assertThat(this.tryToken(token)).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void givenACajero_WhenCajeroIsLogged_ThenTokenIsWorkingAndOnHeaders() throws Exception {
+        String token = this.obtainAccessToken("cajero@aa.es","tpasswrd");
+        assertThat(this.tryToken(token)).isEqualTo(HttpStatus.OK.value());
+    }
+
+
 
      @Test
     void givenCustomerId_whenGetAllAccounts_thenIsNotNull() {

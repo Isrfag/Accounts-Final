@@ -5,6 +5,7 @@ import com.microcompany.accountsservice.model.ERole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -70,8 +71,8 @@ public class ApplicationSecurity {
                                 "/swagger-ui.html",
                                 "/webjars/**"
                         ).permitAll()
-                        .antMatchers("/accounts/**").hasRole(String.valueOf(ERole.CAJERO))
-                        .antMatchers("/**").hasRole(String.valueOf(ERole.DIRECTOR))
+                        .antMatchers("/account/**").hasAnyAuthority(ERole.DIRECTOR.toString(),ERole.CAJERO.toString())
+                        .antMatchers("/**").hasAnyAuthority(ERole.DIRECTOR.toString())
                         .anyRequest().authenticated()
                 );
 
