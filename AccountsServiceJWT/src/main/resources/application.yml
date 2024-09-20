@@ -2,6 +2,7 @@ spring:
   application.name: AccountsService
   profiles.active: dev
 
+app.jwt.secret: SECRET-KEY-VALUE
 ---
 spring:
   sql.init.mode: always
@@ -60,4 +61,3 @@ server:
 
 logging.level.root: ERROR
 
-app.jwt.secret: SECRET-KEY-VALUE

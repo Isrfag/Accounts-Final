@@ -50,7 +50,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if (ObjectUtils.isEmpty(header) || !header.startsWith("Bearer")) {
             return false;
         }
-
         return true;
     }
 
