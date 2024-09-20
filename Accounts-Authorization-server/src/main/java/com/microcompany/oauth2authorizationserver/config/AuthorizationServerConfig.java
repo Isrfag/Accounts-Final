@@ -57,19 +57,19 @@ public class AuthorizationServerConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
+        UserDetails cajeroDetails = User.withDefaultPasswordEncoder()
                 .username("user")
                 .password("password")
-                .roles("USER")
+                .roles("CAJERO")
                 .build();
 
-        UserDetails adminDetails = User.withDefaultPasswordEncoder()
+        UserDetails directorDetails = User.withDefaultPasswordEncoder()
                 .username("admin")
                 .password("password")
-                .roles("ADMIN")
+                .roles("DIRECTOR")
                 .build();
 
-        return new InMemoryUserDetailsManager(userDetails, adminDetails);
+        return new InMemoryUserDetailsManager(cajeroDetails, directorDetails);
     }
 
     @Bean
@@ -103,7 +103,21 @@ public class AuthorizationServerConfig {
                 .tokenSettings(tokenSettings())
                 .build();
 
-        return new InMemoryRegisteredClientRepository(oidcClient1, oidcClient2);
+         RegisteredClient myBankApp = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("client3")
+                .clientSecret("{noop}myClientSecretValue")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/products-client-oidc")
+                .redirectUri("https://oauthdebugger.com/debug")
+                .redirectUri("http://127.0.0.1:8080/authorized")
+                .tokenSettings(tokenSettings())
+                .scope(OidcScopes.OPENID)
+                .scope("SCOPE_products.read")
+                .build();
+
+        return new InMemoryRegisteredClientRepository(oidcClient1, oidcClient2,myBankApp);
     }
 
 
