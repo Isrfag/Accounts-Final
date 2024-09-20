@@ -75,34 +75,6 @@ public class AuthorizationServerConfig {
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
 
-        RegisteredClient oidcClient1 = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("client1")
-                .clientSecret("{noop}myClientSecretValue")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/products-client-oidc")
-                .redirectUri("https://oauthdebugger.com/debug")
-                .redirectUri("http://127.0.0.1:8080/authorized")
-                .tokenSettings(tokenSettings())
-                .scope(OidcScopes.OPENID)
-                .scope("SCOPE_products.read")
-                .build();
-
-        RegisteredClient oidcClient2 = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("client2")
-                .clientSecret("{noop}myClientSecretValue2")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("https://oauthdebugger.com/debug")
-                .redirectUri("http://127.0.0.1:8080/authorized")
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/products-client-oidc")
-                .scope(OidcScopes.OPENID)
-                .scope("SCOPE_products.write")
-                .tokenSettings(tokenSettings())
-                .build();
-
          RegisteredClient myBankApp = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client3")
                 .clientSecret("{noop}myClientSecretValue")
@@ -114,10 +86,10 @@ public class AuthorizationServerConfig {
                 .redirectUri("http://127.0.0.1:8080/authorized")
                 .tokenSettings(tokenSettings())
                 .scope(OidcScopes.OPENID)
-                .scope("SCOPE_products.read")
+                .scope("SCOPE_account.read")
                 .build();
 
-        return new InMemoryRegisteredClientRepository(oidcClient1, oidcClient2,myBankApp);
+        return new InMemoryRegisteredClientRepository(myBankApp);
     }
 
 
