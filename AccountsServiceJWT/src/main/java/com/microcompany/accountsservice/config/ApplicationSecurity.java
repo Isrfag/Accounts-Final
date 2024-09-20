@@ -1,6 +1,7 @@
 package com.microcompany.accountsservice.config;
 
 import com.microcompany.accountsservice.jwt.JwtTokenFilter;
+import com.microcompany.accountsservice.model.ERole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +70,8 @@ public class ApplicationSecurity {
                                 "/swagger-ui.html",
                                 "/webjars/**"
                         ).permitAll()
-                        .antMatchers("/account/**").permitAll()
+                        .antMatchers("/accounts/**").hasRole(String.valueOf(ERole.CAJERO))
+                        .antMatchers("/**").hasRole(String.valueOf(ERole.DIRECTOR))
                         .anyRequest().authenticated()
                 );
 
